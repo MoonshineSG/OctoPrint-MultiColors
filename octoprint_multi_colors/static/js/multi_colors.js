@@ -53,7 +53,7 @@ $(function() {
 	}
 
   	self._sendData = function(data, callback) {
-  		OctoPrint.postJson("api/plugin/multicolors", data)
+  		OctoPrint.postJson("api/plugin/multi_colors", data)
   			.done(function(data) {
   				if (callback) callback(data);
   			});
@@ -87,7 +87,7 @@ $(function() {
 	OCTOPRINT_VIEWMODELS.push([
 		multiColorViewModel, 
 		["loginStateViewModel", "printerStateViewModel"],
-		["#color_layer"]
+		["#multi_color_layer"]
 	]);
 	  
 });  

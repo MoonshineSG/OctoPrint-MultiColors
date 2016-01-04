@@ -73,19 +73,27 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			return False
 
 	def load_regex(self):
-		return self._load_data(self.regex_file)
+		data = self._load_data(self.regex_file)
+		if data == "__default__":
+			return "layer {layer},.*?\n" 
+		return data
 		
 	def save_regex(self, data):
 		self._save_data(self.regex_file, data)
 		
 	def load_gcode(self):
-		return self._load_data(self.gcode_file)
+		data = self._load_data(self.gcode_file)
+		if data == "__default__":
+			return """M117 Change filament
+M300 @change
+M0"""
+		return data
 		
 	def save_gcode(self, data):
 		self._save_data(self.gcode_file, data)
 		
 	def _load_data(self, data_file):
-		data = ""
+		data = "__default__"
 		if os.path.isfile(data_file):
 			with open(data_file, 'r') as f:
 				data = f.read()
@@ -119,7 +127,7 @@ __plugin_name__ = "Multi Colors"
 
 def __plugin_load__():
 	global __plugin_implementation__
-	__plugin_implementation__ = ColorsPlugin()
+	__plugin_implementation__ = MultiColorsPlugin()
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
