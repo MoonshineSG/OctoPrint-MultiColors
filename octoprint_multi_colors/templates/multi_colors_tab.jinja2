@@ -23,13 +23,13 @@
     <div class="hide">
             <label class="control-label">GCODE</label>
             <div class="controls" style="margin-left: 100px; width: 70%" >
-                <textarea cols="40" rows="6" class="input-block-level" data-bind="value: gcode"></textarea>
+                <textarea cols="40" rows="6" class="input-block-level" data-bind="value: gcode, enable: enabled"></textarea>
             </div>
             <div style="margin-left: 100px; width: 70%; padding-top: 5px;  padding-bottom: 20px"><small class="muted">GCODE to be injected at the indicated layers (one GCODE per line)</small></div>
 
             <label class="control-label">Regex</label>
             <div class="controls" style="margin-left: 100px; width: 70%" >
-                <input type="text" class="input-block-level" data-bind="value: find_string">
+                <input type="text" class="input-block-level" data-bind="value: find_string, enable: enabled">
             </div>
             <div style="margin-left: 100px; width: 70%; padding-top: 5px;  padding-bottom: 20px"><small class="muted">Change the regex used the find the position AFTER which the GCODE will be injected.<br/><br/>The final code will look somthing like this <br/><code>ACB<i>regex_match</i>\n<i>GCODE</i>\nXYZ</code><br/><br/><i>{layer}</i> is a place holder for layers iteration.</small></div>
     </div>
