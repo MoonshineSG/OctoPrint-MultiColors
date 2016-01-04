@@ -21,7 +21,7 @@ $(function() {
 	}
 
 	self._update = function(file_name){
-		if (self.printer.isPrinting() && self.printer.isPaused() ) {
+		if (self.printer.isPrinting() || self.printer.isPaused() ) {
 			self.message("Don't use this while printing...");
 			self.enabled(false);
 		} else {
