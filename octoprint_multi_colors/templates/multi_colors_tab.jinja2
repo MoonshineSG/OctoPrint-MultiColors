@@ -1,0 +1,36 @@
+<div id="multi_color_layer" data-bind="visible: isAdmin">
+<h4>Fillament change for multi color printing</h4>
+
+<div style="text-align: center; margin: auto; width: 100%; padding-top: 5px; padding-bottom: 20px" data-bind="text: message"></div>
+
+<div data-bind="visible: enabled">
+            <label class="control-label">Layers</label>
+            <div class="controls" style="margin-left: 100px; width: 70%" >
+                <input type="text" class="input-block-level" data-bind="value: layers">
+            </div>
+            <div style="margin-left: 100px; width: 70%; padding-bottom: 20px">
+            <small class="muted">Layers where the GCODE will be injected (space or comma separated)</small>
+            </div>
+
+            <form class="form-horizontal" style="text-align:center; width: 100%">
+                <button data-bind="click: changeLayers">Process</button>
+                <div><small class="muted">Save GCODE (and regex) for future use and execute code injection</small></div>
+            </form>
+</div>
+
+            <div><small><a href="javascript:void(0);" class="muted" onclick="$(this).children().toggleClass('icon-caret-right icon-caret-down').parent().parent().parent().next().slideToggle('fast')"><i class="icon-caret-right"></i> Advanced Options</a></small></div>
+
+    <div class="hide">
+            <label class="control-label">GCODE</label>
+            <div class="controls" style="margin-left: 100px; width: 70%" >
+                <textarea cols="40" rows="6" class="input-block-level" data-bind="value: gcode"></textarea>
+            </div>
+            <div style="margin-left: 100px; width: 70%; padding-top: 5px;  padding-bottom: 20px"><small class="muted">GCODE to be injected at the indicated layers (one GCODE per line)</small></div>
+
+            <label class="control-label">Regex</label>
+            <div class="controls" style="margin-left: 100px; width: 70%" >
+                <input type="text" class="input-block-level" data-bind="value: find_string">
+            </div>
+            <div style="margin-left: 100px; width: 70%; padding-top: 5px;  padding-bottom: 20px"><small class="muted">Change the regex used the find the position AFTER which the GCODE will be injected.<br/><br/>The final code will look somthing like this <br/><code>ACB<i>regex_match</i>\n<i>GCODE</i>\nXYZ</code><br/><br/><i>{layer}</i> is a place holder for layers iteration.</small></div>
+    </div>
+</div>
