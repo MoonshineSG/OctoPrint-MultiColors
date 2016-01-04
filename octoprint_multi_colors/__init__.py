@@ -108,7 +108,7 @@ M0"""
 
 	def get_update_information(self):
 		return dict(
-			touchui=dict(
+			multi_colors=dict(
 				displayName="Multi Colors",
 				displayVersion=self._plugin_version,
 
