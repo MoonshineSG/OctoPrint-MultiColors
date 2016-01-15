@@ -1,8 +1,8 @@
-<div id="multi_color_layer" data-bind="visible: isAdmin">
+<div id="multi_color_layer">
 <h4>Fillament change for multi color printing</h4>
 
 <div style="text-align: center; margin: auto; width: 100%; padding-top: 5px; padding-bottom: 20px" data-bind="text: message"></div>
-
+<div  data-bind="visible: isAdmin">
 <div data-bind="visible: enabled">
             <label class="control-label">Layers</label>
             <div class="controls" style="margin-left: 100px; width: 70%" >
@@ -33,4 +33,5 @@
             </div>
             <div style="margin-left: 100px; width: 70%; padding-top: 5px;  padding-bottom: 20px"><small class="muted">Change the regex used the find the position AFTER which the GCODE will be injected.<br/><br/>The final code will look somthing like this <br/><code>ACB<i>regex_match</i>\n<i>GCODE</i>\nXYZ</code><br/><br/><i>{layer}</i> is a place holder for layers iteration.</small></div>
     </div>
+</div>    
 </div>
