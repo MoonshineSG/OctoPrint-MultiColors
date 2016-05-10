@@ -61,7 +61,7 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			for layer in layers:
 				with open(file, 'r+') as f:
 					self._logger.info("Trying layer '%s'..."%layer)
-					search = re.compile(ur'({0})'.format( find_string.format(layer = int(layer)) ), re.DOTALL)
+					search = re.compile(ur'({0}$)'.format( find_string.format(layer = int(layer)) ), re.MULTILINE)
 					with contextlib.closing(mmap.mmap(f.fileno(), 0)) as m:
 						result = re.sub(search, replace, m)
 						f.seek(0)
