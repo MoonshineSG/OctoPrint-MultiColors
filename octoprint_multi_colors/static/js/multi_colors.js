@@ -5,6 +5,7 @@ $(function() {
 
 	self.loginState = viewModels[0];
 	self.printer = viewModels[1];
+	self.gcodeViewModel = viewModels[2];
 
 	self.gcode = ko.observable();
 	self.layers = ko.observable();
@@ -77,6 +78,7 @@ $(function() {
 			function(data){
  				if (data.status) {
 					new PNotify({title:"Colors", text:"GCODE injected successfuly", type: "success"});
+					self.gcodeViewModel.reload();
 				} else {
 					new PNotify({title:"Colors", text: "Injecting GCODE failed", type: "error"});
 				}
@@ -86,7 +88,7 @@ $(function() {
 	
 	OCTOPRINT_VIEWMODELS.push([
 		multiColorViewModel, 
-		["loginStateViewModel", "printerStateViewModel"],
+		["loginStateViewModel", "printerStateViewModel", "gcodeViewModel"],
 		["#multi_color_layer"]
 	]);
 	  
