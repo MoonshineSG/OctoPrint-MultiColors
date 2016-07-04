@@ -53,11 +53,22 @@ $(function() {
 		self._update(payload.filename);
 	}
 
-  	self._sendData = function(data, callback) {
-  		OctoPrint.postJson("api/plugin/multi_colors", data)
-  			.done(function(data) {
-  				if (callback) callback(data);
-  			});
+	self._sendData = function(data, callback) {
+		try {
+			OctoPrint.postJson("api/plugin/multi_colors", data)
+				.done(function(data) {
+					if (callback) callback(data);
+			});
+		} catch(err) { //fallback to pre-devel version
+			 $.ajax({
+				 url: API_BASEURL + "plugin/multi_colors",
+				 type: "POST",
+				 dataType: "json",
+				 timeout: 10000,
+				 contentType: "application/json; charset=UTF-8",
+				 data: JSON.stringify(data)
+			}).done(function(data){if (typeof callback === "function") callback(data);});
+		}
   	};
 	 
 	self.changeLayers = function(){
