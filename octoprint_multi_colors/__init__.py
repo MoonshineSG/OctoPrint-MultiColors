@@ -123,7 +123,7 @@ M0"""
 		)
 
 __plugin_name__ = "Multi Colors"
-__plugin_version__ = "1.0.0"
+__plugin_version__ = "1.0.1"
 __plugin_description__ = "Inject GCODE at specified layers to allow multi color printing."
 
 def __plugin_load__():
