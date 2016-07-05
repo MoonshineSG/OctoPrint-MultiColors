@@ -55,7 +55,7 @@ $(function() {
 
 	self._sendData = function(data, callback) {
 		try {
-			OctoPrint.postJson("api/plugin/multi_colors", data)
+			OctoPrint.postJson(API_BASEURL + "plugin/multi_colors", data)
 				.done(function(data) {
 					if (callback) callback(data);
 			});
