@@ -55,7 +55,7 @@ $(function() {
 
 	self._sendData = function(data, callback) {
 		try {
-			OctoPrint.postJson(API_BASEURL + "plugin/multi_colors", data)
+			OctoPrint.postJson("api/plugin/multi_colors", data)
 				.done(function(data) {
 					if (callback) callback(data);
 			});
@@ -69,7 +69,7 @@ $(function() {
 				 data: JSON.stringify(data)
 			}).done(function(data){if (typeof callback === "function") callback(data);});
 		}
-  	};
+	};
 	 
 	self.changeLayers = function(){
 		if (self.layers() == undefined || self.layers().trim() == "") {
