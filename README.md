@@ -15,4 +15,4 @@ https://github.com/MoonshineSG/Octoprint-MultiColors/archive/master.zip
 
 
 ###Updates
-1.0.2 - fix upload folder for other than RPi platfrom
+1.0.3 - fix upload folder for other than RPi platfrom
