@@ -7,7 +7,6 @@ from octoprint.events import Events
 from octoprint.server import printer
 import logging
 
-
 from flask import jsonify
 import os.path
 import datetime
@@ -18,7 +17,8 @@ import contextlib
 
 class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 					octoprint.plugin.SimpleApiPlugin,
-					octoprint.plugin.TemplatePlugin):
+					octoprint.plugin.TemplatePlugin,
+					octoprint.plugin.SettingsPlugin):
 
 	def initialize(self):
 		#self._logger.setLevel(logging.DEBUG)
@@ -53,10 +53,9 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			self.save_gcode(data.get('gcode'))
 			self.save_regex(data.get('find_string'))
 			
-			gcode_file = os.path.normpath(os.path.join(self.get_plugin_data_folder(), "..", "..", "uploads", data.get('file')))
-			
+			gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file'))
 			self._logger.info("File to modify '%s'"%gcode_file)
-			
+
 			ret = self.inject_gcode(gcode_file, data.get('layers').replace(",", " ").split(), data.get('find_string'), data.get('gcode'))
 			return jsonify(dict(status=ret) )
 

@@ -50,7 +50,12 @@ $(function() {
 	}
 
 	self.onEventFileSelected = function(payload) {
-		self._update(payload.filename);
+		if (payload.target == "local") {
+			self._update(payload.path);	
+		} else {
+			new PNotify({title:"Colors", text: "Injecting GCODE on SD card files not yet supported", type: "error"});
+		}
+		
 	}
 
 	self._sendData = function(data, callback) {

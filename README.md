@@ -12,7 +12,3 @@ Note: this plugin does NOT work with files on the SD card.
 Install via the bundled Plugin Manager or manually using this URL:
 
 https://github.com/MoonshineSG/Octoprint-MultiColors/archive/master.zip
-
-
-###Updates
-1.0.3 - fix upload folder for other than RPi platfrom
