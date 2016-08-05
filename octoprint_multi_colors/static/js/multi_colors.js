@@ -14,6 +14,7 @@ $(function() {
 	self.find_string = ko.observable();
 
 	self.NO_FILE = "First, select a GCODE file for printing...";
+	self.NO_SD = "Injecting GCODE on SD card files not yet supported";
 	
 	self.onBeforeBinding = function () {
 		self.isAdmin = viewModels[0].isAdmin;
@@ -40,8 +41,12 @@ $(function() {
 
 	self.onTabChange = function(current, previous) {
 		if (current == "#tab_plugin_multi_colors") {
-			self._sendData({"command":"settings"}, function(data){ self.gcode(data.gcode); self.find_string(data.find_string)});
-			self._update(self.printer.filename());
+			if ( self.printer.sd() ) {
+				self.message(self.NO_SD);
+			} else {
+				self._sendData({"command":"settings"}, function(data){ self.gcode(data.gcode); self.find_string(data.find_string)});
+				self._update(self.printer.filename());
+			}
 		}
 	}
 
@@ -50,12 +55,11 @@ $(function() {
 	}
 
 	self.onEventFileSelected = function(payload) {
-		if (payload.target == "local") {
+		if (payload.origin == "local") {
 			self._update(payload.path);	
 		} else {
-			new PNotify({title:"Colors", text: "Injecting GCODE on SD card files not yet supported", type: "error"});
+			self.message(self.NO_SD);
 		}
-		
 	}
 
 	self._sendData = function(data, callback) {
