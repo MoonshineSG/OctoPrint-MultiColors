@@ -52,7 +52,12 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 		elif command == "process":
 			self.save_gcode(data.get('gcode'))
 			self.save_regex(data.get('find_string'))
-			ret = self.inject_gcode(os.path.join("/home/pi/.octoprint/uploads/", data.get('file')), data.get('layers').replace(",", " ").split(), data.get('find_string'), data.get('gcode'))
+			
+			gcode_file = os.path.normpath(os.path.join(self.get_plugin_data_folder(), "..", "..", "uploads", data.get('file')))
+			
+			self._logger.info("File to modify '%s'"%gcode_file)
+			
+			ret = self.inject_gcode(gcode_file, data.get('layers').replace(",", " ").split(), data.get('find_string'), data.get('gcode'))
 			return jsonify(dict(status=ret) )
 
 	def inject_gcode(self, file, layers, find_string, gcode):
@@ -133,6 +138,3 @@ def __plugin_load__():
 	__plugin_hooks__ = {
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
 	}
-
-
-
