@@ -96,11 +96,9 @@ $(function() {
 		
 		self._sendData({"command":"process", "file":self.filename, "gcode":self.gcode(), "layers":self.layers(),  "find_string":self.find_string().trim() }, 
 			function(data){
- 				if (data.status) {
-					new PNotify({title:"Colors", text:"GCODE injected successfuly", type: "success"});
+				new PNotify({title:"Colors", text:data.message, type: data.status});
+	 			if (data.status != "error") {
 					self.gcodeViewModel.reload();
-				} else {
-					new PNotify({title:"Colors", text: "Injecting GCODE failed", type: "error"});
 				}
 			});
 	}

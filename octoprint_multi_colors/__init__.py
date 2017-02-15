@@ -56,25 +56,45 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file'))
 			self._logger.info("File to modify '%s'"%gcode_file)
 
-			ret = self.inject_gcode(gcode_file, data.get('layers').replace(",", " ").split(), data.get('find_string'), data.get('gcode'))
-			return jsonify(dict(status=ret) )
+			ret, message = self.inject_gcode(gcode_file, data.get('layers').replace(",", " ").split(), data.get('find_string'), data.get('gcode'))
+			return jsonify(dict(status=ret, message=message) )
 
 	def inject_gcode(self, file, layers, find_string, gcode):
 		try:
-			replace  = ur'\1\n{0}\n'.format(gcode)
+			marker = "; multi color"
+			line_found = False
+			with open(file, "r") as f:
+			    line_found = any(marker in line for line in f)
+
+			found = 0
+			replace  = ur'\1\n{0}\n{1}\n'.format(marker, gcode)
 			for layer in layers:
 				with open(file, 'r+') as f:
-					self._logger.info("Trying layer '%s'..."%layer)
-					search = re.compile(ur'({0}$)'.format( find_string.format(layer = int(layer)) ), re.MULTILINE)
+					self._logger.info("Trying to insert multi color code for layer '%s'..."%layer)
+					search = re.compile(ur'({0}$)'.format( find_string.format(layer = int(layer))) , re.MULTILINE)
+					self._logger.debug(search.pattern)
 					with contextlib.closing(mmap.mmap(f.fileno(), 0)) as m:
-						result = re.sub(search, replace, m)
-						f.seek(0)
-						f.write(result)
-						f.flush()
-			return True
+						test = re.search(search, m)
+						if test:
+							found += 1
+							result = re.sub(search, replace, m)
+							f.seek(0)
+							f.write(result)
+							f.flush()
+						else:
+							self._logger.info("Failed to insert code for layer %s"%layer)
+
+			needed = len(layers)
+			if needed == found:
+				if line_found: 
+					return "info", "ATTENTION!!! This file has been processed before!!!. You might get double pause. %s GCODE injected successfuly."%found
+				else:
+					return "success", "%s GCODE injected successfuly."%found
+			else:
+				return "error", "Injecting GCODE failed. Replaced %s out of %s needed."%(found, needed)
 		except Exception as e:
 			self._logger.error(e)
-			return False
+			return "error", "Injecting GCODE failed [%s]"%e
 
 	def load_regex(self):
 		data = self._load_data(self.regex_file)
