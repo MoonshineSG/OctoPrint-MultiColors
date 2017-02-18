@@ -44,7 +44,7 @@ $(function() {
 			if ( self.printer.sd() ) {
 				self.message(self.NO_SD);
 			} else {
-				self._update(self.printer.filename());
+				self._update(self.printer.filepath());
 			}
 			self._sendData({"command":"settings"}, function(data){ self.gcode(data.gcode); self.find_string(data.find_string)});
 		}
