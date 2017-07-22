@@ -71,7 +71,7 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			for layer in layers:
 				with open(file, 'r+') as f:
 					self._logger.info("Trying to insert multi color code for layer '%s'..."%layer)
-					search = re.compile(ur'({0}$)'.format( find_string.format(layer = int(layer))) , re.MULTILINE)
+					search = re.compile(ur'({0}(\r\n?|\n))'.format( find_string.format(layer = int(layer))) , re.MULTILINE)
 					self._logger.debug(search.pattern)
 					with contextlib.closing(mmap.mmap(f.fileno(), 0)) as m:
 						test = re.search(search, m)
