@@ -5,13 +5,15 @@ $(function() {
 
 	self.loginState = viewModels[0];
 	self.printer = viewModels[1];
-	self.gcodeViewModel = viewModels[2];
+	self.filesViewModel = viewModels[2];
 
 	self.gcode = ko.observable();
 	self.layers = ko.observable();
 	self.message = ko.observable();
 	self.enabled = ko.observable();
 	self.find_string = ko.observable();
+	self.duplicate = ko.observable();
+	self.can_duplicate = ko.observable();
 
 	self.NO_FILE = "First, select a GCODE file for printing...";
 	self.NO_SD = "Injecting GCODE on SD card files not yet supported";
@@ -29,14 +31,22 @@ $(function() {
 		} else {
 			if (file_name != null) {
 				self.filename = file_name;
-				self.message( _.sprintf('Selected file "%(filename)s"', {filename: self.filename}) );
+				self.message( _.sprintf('Processing file "%(filename)s"...', {filename: self.filename}) );
 				self.enabled(true);
+				
+				self.duplicate(JSON.parse(localStorage.getItem("multicolors.duplicate")));
+				if ( file_name.substring(0, file_name.lastIndexOf('.')).endsWith("_multi") ) {
+					self.can_duplicate(false);
+					self.duplicate(false);
+					self.message( _.sprintf('File "%(filename)s" already processed!! ', {filename: self.filename}) );
+				} else {
+					self.can_duplicate(true);
+				}
 			} else {
 				self.message(self.NO_FILE);
 				self.enabled(false);
 			}
 		}
-		
 	  }
 
 	self.onTabChange = function(current, previous) {
@@ -46,12 +56,16 @@ $(function() {
 			} else {
 				self._update(self.printer.filepath());
 			}
-			self._sendData({"command":"settings"}, function(data){ self.gcode(data.gcode); self.find_string(data.find_string)});
 		}
 	}
 
 	self.onEventFileDeselected = function(payload) {
 		self._update(null);
+	}
+
+	self.onAfterBinding = function(payload) {
+		self.onTabChange("#tab_plugin_multi_colors", null);
+		self._sendData({"command":"settings"}, function(data){ self.gcode(data.gcode); self.find_string(data.find_string)});
 	}
 
 	self.onEventFileSelected = function(payload) {
@@ -93,20 +107,38 @@ $(function() {
 			showMessageDialog({ title: "Regex please!", message: "Please enter a valid regex (advanced settings)." });
 			return;
 		} 
-		
-		self._sendData({"command":"process", "file":self.filename, "gcode":self.gcode(), "layers":self.layers(),  "find_string":self.find_string().trim() }, 
+		if (self.can_duplicate()){
+			localStorage.setItem("multicolors.duplicate", self.duplicate());
+		}
+		if ( ! self.duplicate() ) {
+			showConfirmationDialog({
+					message: gettext("This will insert additional gcode in your original file."),
+					cancel: gettext("No"),
+					proceed: gettext("Yes"),
+					onproceed: function() {
+						self.proceed();
+				}
+			});
+		} else {
+			self.proceed();
+		}
+	}
+	
+	self.proceed = function(){
+		self._sendData({"command":"process", "duplicate":self.duplicate(), "file":self.filename, "gcode":self.gcode(), "layers":self.layers(),  "find_string":self.find_string().trim() }, 
 			function(data){
 				new PNotify({title:"Colors", text:data.message, type: data.status});
-	 			if (data.status != "error") {
-					self.gcodeViewModel.reload();
-				}
+				self.filesViewModel.requestData({force:true});
+	 			//if (data.status != "error") {
+					//self.filesViewModel.loadFile({origin:"local", path:data.file});
+				//}
 			});
 	}
 }
 	
 	OCTOPRINT_VIEWMODELS.push([
 		multiColorViewModel, 
-		["loginStateViewModel", "printerStateViewModel", "gcodeViewModel"],
+		["loginStateViewModel", "printerStateViewModel", "filesViewModel", ],
 		["#multi_color_layer"]
 	]);
 	  

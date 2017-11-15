@@ -14,6 +14,8 @@
             </div>
 
             <form class="form-horizontal" style="text-align:center; width: 100%">
+                <label><input type="checkbox" value="duplicate" data-bind="checked: duplicate, enable:can_duplicate"/> Duplicate file</label>
+                <div><small class="muted">Apply changes to a copy of the gcode file. The new file will have "_multi" added at the end of it's name</small></div><br/>
                 <button data-bind="click: changeLayers">Process</button>
                 <div><small class="muted">Save GCODE (and regex) for future use and execute code injection</small></div>
             </form>

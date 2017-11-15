@@ -8,12 +8,12 @@ from octoprint.server import printer
 import logging
 
 from flask import jsonify
-import os.path
+import os.path, os.linesep
 import datetime
 import mmap
 import re
 import contextlib
-
+from shutil import copyfile
 
 class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 					octoprint.plugin.SimpleApiPlugin,
@@ -45,6 +45,13 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			process=["file", "gcode", "layers", "find_string"],
 		)
 
+	def rename(self, fname):
+		name, ext = os.path.splitext(fname)
+		if name.endswith("_multi"):
+			return fname
+		else:
+			return "%s_multi%s"%(name, ext)
+
 	def on_api_command(self, command, data):
 		self._logger.info("on_api_command called: '{command}' / '{data}'".format(**locals()))
 		if command == "settings":
@@ -53,11 +60,22 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			self.save_gcode(data.get('gcode'))
 			self.save_regex(data.get('find_string'))
 			
-			gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file'))
+			if data.get('duplicate'):
+				old_gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file'))				
+				gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), self.rename(data.get('file')) )
+				if gcode_file != old_gcode_file:
+					copyfile(old_gcode_file, gcode_file)
+			else:
+				gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file'))
+			
 			self._logger.info("File to modify '%s'"%gcode_file)
 
 			ret, message = self.inject_gcode(gcode_file, data.get('layers').replace(",", " ").split(), data.get('find_string'), data.get('gcode'))
-			return jsonify(dict(status=ret, message=message) )
+			
+			if ret == "error":
+				return jsonify(dict(status=ret, message=message, file=data.get('file')) )
+			else:
+				return jsonify(dict(status=ret, message=message, file=self.rename(data.get('file'))) )
 
 	def inject_gcode(self, file, layers, find_string, gcode):
 		try:
@@ -67,7 +85,11 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			    line_found = any(marker in line for line in f)
 
 			found = 0
-			replace  = ur'\1\n{0}\n{1}\n'.format(marker, gcode)
+			if "\1" in gcode:
+				replace  = ur'{0}{3}{1}{3}'.format(marker, gcode, linesep)
+			else:
+				replace  = ur'\1{3}{0}{3}{1}{3}'.format(marker, gcode, linesep)
+				
 			for layer in layers:
 				with open(file, 'r+') as f:
 					self._logger.info("Trying to insert multi color code for layer '%s'..."%layer)
