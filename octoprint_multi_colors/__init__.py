@@ -8,7 +8,8 @@ from octoprint.server import printer
 import logging
 
 from flask import jsonify
-import os.path, os.linesep
+import os.path
+from os import linesep
 import datetime
 import mmap
 import re
@@ -85,10 +86,8 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			    line_found = any(marker in line for line in f)
 
 			found = 0
-			if "\1" in gcode:
-				replace  = ur'{0}{3}{1}{3}'.format(marker, gcode, linesep)
-			else:
-				replace  = ur'\1{3}{0}{3}{1}{3}'.format(marker, gcode, linesep)
+			
+			replace  = ur'\1{2}{0}{2}{1}{2}'.format(marker, gcode, linesep)
 				
 			for layer in layers:
 				with open(file, 'r+') as f:
