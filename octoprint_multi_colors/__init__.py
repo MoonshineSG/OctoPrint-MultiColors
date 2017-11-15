@@ -15,6 +15,7 @@ import mmap
 import re
 import contextlib
 from shutil import copyfile
+import os
 
 class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 					octoprint.plugin.SimpleApiPlugin,
@@ -61,25 +62,28 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			self.save_gcode(data.get('gcode'))
 			self.save_regex(data.get('find_string'))
 			
-			if data.get('duplicate'):
-				old_gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file'))				
-				gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), self.rename(data.get('file')) )
-				if gcode_file != old_gcode_file:
-					copyfile(old_gcode_file, gcode_file)
-			else:
-				gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file'))
+			gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file') )
+			gcode_file_multi = os.path.join(self._settings.global_get_basefolder('uploads'), self.rename(data.get('file')) )
+			work_copy = "%s.tmp"%gcode_file
 			
-			self._logger.info("File to modify '%s'"%gcode_file)
+			copyfile(gcode_file, work_copy)
 
-			ret, message = self.inject_gcode(gcode_file, data.get('layers').replace(",", " ").split(), data.get('find_string'), data.get('gcode'))
+			ret, message = self.inject_gcode(work_copy, data.get('layers').replace(",", " ").split(), data.get('find_string'), data.get('gcode'))
 			
-			if ret == "error":
-				return jsonify(dict(status=ret, message=message, file=data.get('file')) )
-			else:
-				return jsonify(dict(status=ret, message=message, file=self.rename(data.get('file'))) )
+			if ret != "error": 
+				if data.get('duplicate'):
+					copyfile(work_copy, gcode_file_multi)
+				else:
+					copyfile(work_copy, gcode_file)
+					
+			os.remove( work_copy )
+				
+			return jsonify(dict(status=ret, message=message))
 
 	def inject_gcode(self, file, layers, find_string, gcode):
 		try:
+			self._logger.info("File to modify '%s'"%file)
+			
 			marker = "; multi color"
 			line_found = False
 			with open(file, "r") as f:
