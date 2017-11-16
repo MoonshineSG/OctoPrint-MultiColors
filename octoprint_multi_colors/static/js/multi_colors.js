@@ -129,8 +129,8 @@ $(function() {
 			function(data){
 				new PNotify({title:"Colors", text:data.message, type: data.status});
 				self.filesViewModel.requestData({force:true});
-	 			if (data.status != "error" and !self.duplicate()) {
-					self.filesViewModel.loadFile({origin:"local", self.filename});
+	 			if (data.status != "error" && !self.duplicate()) {
+					self.filesViewModel.loadFile({origin:"local", path:self.filename});
 				}
 			});
 	}
