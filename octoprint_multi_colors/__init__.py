@@ -63,7 +63,7 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			self.save_regex(data.get('find_string'))
 			
 			gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file') )
-			gcode_file_multi = os.path.join(self._settings.global_get_basefolder('uploads'), self.rename(data.get('file')) )
+			gcode_file_multi = os.path.join(self._settings.global_get_basefolder('watched'), self.rename(data.get('file')) )
 			work_copy = "%s.tmp"%gcode_file
 			
 			copyfile(gcode_file, work_copy)
