@@ -5,6 +5,8 @@ import octoprint.plugin
 import octoprint.events
 from octoprint.events import Events
 from octoprint.server import printer
+from octoprint.filemanager import FileDestinations
+
 import logging
 
 from flask import jsonify
@@ -62,20 +64,28 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			self.save_gcode(data.get('gcode'))
 			self.save_regex(data.get('find_string'))
 			
+			#selected file
 			gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), data.get('file') )
-			gcode_file_multi = os.path.join(self._settings.global_get_basefolder('watched'), self.rename(data.get('file')) )
-			work_copy = "%s.tmp"%gcode_file
 			
+			#create temp file
+			work_copy = "%s.tmp"%gcode_file
 			copyfile(gcode_file, work_copy)
 
+			#code injection
 			ret, message = self.inject_gcode(work_copy, data.get('layers').replace(",", " ").split(), data.get('find_string'), data.get('gcode'))
+			
 			
 			if ret != "error": 
 				if data.get('duplicate'):
-					copyfile(work_copy, gcode_file_multi)
-				else:
-					copyfile(work_copy, gcode_file)
-					
+					gcode_file = os.path.join(self._settings.global_get_basefolder('uploads'), self.rename(data.get('file')) )
+				
+				#copy temp file 
+				copyfile(work_copy, gcode_file)
+				
+				#start file analysis
+				self._file_manager.analyse(FileDestinations.LOCAL, gcode_file) 
+				
+			#cleanup
 			os.remove( work_copy )
 				
 			return jsonify(dict(status=ret, message=message))
