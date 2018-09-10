@@ -18,6 +18,7 @@ import re
 import contextlib
 from shutil import copyfile
 import os
+import io
 
 class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 					octoprint.plugin.SimpleApiPlugin,
@@ -84,6 +85,9 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 				
 				#start file analysis
 				self._file_manager.analyse(FileDestinations.LOCAL, gcode_file) 
+
+				#load
+				self._printer.select_file(gcode_file, False)
 				
 			#cleanup
 			os.remove( work_copy )
@@ -96,15 +100,14 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			
 			marker = "; multi color"
 			line_found = False
-			with open(file, "r") as f:
+			with io.open(file, "r", encoding="utf-8") as f:
 			    line_found = any(marker in line for line in f)
 
 			found = 0
 			
-			replace  = ur'\1{2}{0}{2}{1}{2}'.format(marker, gcode, linesep)
-				
+			replace  = ur'\1{2}{0}{2}{1}{2}'.format(marker, gcode, linesep).encode('utf-8')
 			for layer in layers:
-				with open(file, 'r+') as f:
+				with io.open(file, 'r+', encoding="utf-8") as f:
 					self._logger.info("Trying to insert multi color code for layer '%s'..."%layer)
 					search = re.compile(ur'({0}(\r\n?|\n))'.format( find_string.format(layer = int(layer))) , re.MULTILINE)
 					self._logger.debug(search.pattern)
@@ -113,8 +116,8 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 						if test:
 							found += 1
 							result = re.sub(search, replace, m)
-							f.seek(0)
-							f.write(result)
+							f.truncate()
+							f.write(result.decode("utf-8"))
 							f.flush()
 						else:
 							self._logger.info("Failed to insert code for layer %s"%layer)
