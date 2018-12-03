@@ -5,12 +5,12 @@
 <div  data-bind="visible: isAdmin">
 <div data-bind="visible: enabled">
             <br/><br/>
-            <label class="control-label">Layers</label>
+            <label class="control-label">Layer number or height</label>
             <div class="controls" style="margin-left: 100px; width: 70%" >
                 <input type="text" class="input-block-level" data-bind="value: layers">
             </div>
             <div style="margin-left: 100px; width: 70%; padding-bottom: 20px">
-            <small class="muted">Layers where the GCODE will be injected (space or comma separated). Code inserted usually at the <b>begining</b> of the layer.</small>
+            <small class="muted">Layer number or height where the GCODE will be injected (space or comma separated). Code inserted usually at the <b>begining</b> of the new layer.</small>
             </div>
 
             <form class="form-horizontal" style="text-align:center; width: 100%">
@@ -23,13 +23,13 @@
 
     <div><small><a href="javascript:void(0);" class="muted" onclick="$(this).children().toggleClass('icon-caret-right icon-caret-down').parent().parent().parent().next().slideToggle('fast')"><i class="icon-caret-right"></i> Advanced Options</a></small></div>
     <div class="hide">
-            <label class="control-label">Look for (regular expression)</label>
+            <label class="control-label">Find line (regular expression)</label>
             <div class="controls" style="margin-left: 100px; width: 70%;  padding-bottom: 20px">
                 <input type="text" class="input-block-level" data-bind="value: find_string, enable: enabled"><br/>
                 <i>{layer}</i> is a place holder for layers iteration.</i>
             </div>
             <br/><br/>
-            <label class="control-label">Add GCODE</label>
+            <label class="control-label">Inject GCODE</label>
             <div class="controls" style="margin-left: 100px; width: 70%;  padding-bottom: 20px" >
                 <textarea cols="40" rows="6" class="input-block-level" data-bind="value: gcode, enable: enabled"></textarea>
                 <small class="muted">GCODE to be injected <b>after</b> the line matched by the regular expression (enter one GCODE per line)<br/>

@@ -109,7 +109,7 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 			for layer in layers:
 				with io.open(file, 'r+', encoding="utf-8") as f:
 					self._logger.info("Trying to insert multi color code for layer '%s'..."%layer)
-					search = re.compile(ur'({0}(\r\n?|\n))'.format( find_string.format(layer = int(layer))) , re.MULTILINE)
+					search = re.compile(ur'({0}(\r\n?|\n))'.format( find_string.format(layer = layer.strip())) , re.MULTILINE)
 					self._logger.debug(search.pattern)
 					with contextlib.closing(mmap.mmap(f.fileno(), 0)) as m:
 						test = re.search(search, m)
@@ -137,7 +137,7 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 	def load_regex(self):
 		data = self._load_data(self.regex_file)
 		if data == "__default__":
-			return "layer {layer},.*?" 
+			return ";layer {layer}.*?"
 		return data
 		
 	def save_regex(self, data):

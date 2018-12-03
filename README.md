@@ -1,6 +1,6 @@
 # OctoPrint-MultiColors
 
-Octoprint plugin to inject GCODE for filament change at selected layers
+Octoprint plugin to inject GCODE for filament change at selected layer or at the specified heigth. It depends what slicer do you use.
 
 Note: this plugin does NOT work with files on the SD card.
 
