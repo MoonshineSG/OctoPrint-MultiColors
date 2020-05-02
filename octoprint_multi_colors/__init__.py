@@ -1,5 +1,5 @@
-# coding=utf-8
-from __future__ import absolute_import
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import octoprint.plugin
 import octoprint.events
@@ -105,11 +105,11 @@ class MultiColorsPlugin(octoprint.plugin.AssetPlugin,
 
 			found = 0
 			
-			replace  = ur'\1{2}{0}{2}{1}{2}'.format(marker, gcode, linesep).encode('utf-8')
+			replace  = r'\1{2}{0}{2}{1}{2}'.format(marker, gcode, linesep).encode('utf-8')
 			for layer in layers:
 				with io.open(file, 'r+', encoding="utf-8") as f:
 					self._logger.info("Trying to insert multi color code for layer '%s'..."%layer)
-					search = re.compile(ur'({0}(\r\n?|\n))'.format( find_string.format(layer = layer.strip())) , re.MULTILINE)
+					search = re.compile(r'({0}(\r\n?|\n))'.format( find_string.format(layer = layer.strip())).encode('utf-8') , re.MULTILINE)
 					self._logger.debug(search.pattern)
 					with contextlib.closing(mmap.mmap(f.fileno(), 0)) as m:
 						test = re.search(search, m)
@@ -186,6 +186,7 @@ M0"""
 
 __plugin_name__ = "Multi Colors"
 __plugin_description__ = "Inject GCODE at specified layers to allow multi color printing."
+__plugin_pythoncompat__ = ">=2.7,<4"
 
 def __plugin_load__():
 	global __plugin_implementation__
